@@ -31,5 +31,19 @@ export class UserService {
     })
   }
 
-  deleteUser(req: Request, res: Response) {}
+  public async deleteUser(req: Request, res: Response) {
+    try {
+      const token = req.headers.authorization?.split(' ')[1]
+      if (!token) return res.status(400).send({ message: 'token' })
+
+      const decoded = jwtToken.verifyToken(token)
+      if (decoded) {
+        await User.deleteOne({ email: decoded.payload })
+        return res.send({ message: '성공적으로 삭제' })
+      }
+      return res.status(400).send({ message: '유효하지 않은 토큰' })
+    } catch (err) {
+      console.log(err)
+    }
+  }
 }
