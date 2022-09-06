@@ -26,6 +26,7 @@ class Server {
   }
 
   private setRoute() {
+    this.app.use(express.json())
     this.app.use(appController.getRouter())
     this.app.use(authController.getRouter())
     this.app.use(userController.getRouter())
