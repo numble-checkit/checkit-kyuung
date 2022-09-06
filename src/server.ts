@@ -1,18 +1,20 @@
 import express from 'express'
 import mongoose from 'mongoose'
 import * as dotenv from 'dotenv'
-import { appController } from './app/app.module'
-import { authController } from './auth/auth.module'
-import { userController } from './user/user.module'
-import { doctorController } from './doctor/doctor.module'
-import { stdController } from './std/std.module'
+import swaggerUi from 'swagger-ui-express'
+import { appController } from './modules/app/app.module'
+import { authController } from './modules/auth/auth.module'
+import { userController } from './modules/user/user.module'
+import { doctorController } from './modules/doctor/doctor.module'
+import { stdController } from './modules/std/std.module'
+import { specs } from './config/swagger'
 
 dotenv.config()
 
 class Server {
-  public app: express.Application
-  public port: any
-  public mongoUrl: any
+  private app: express.Application
+  private port: any
+  private mongoUrl: any
 
   constructor() {
     const { PORT, MONGODB_URI } = process.env
@@ -41,13 +43,18 @@ class Server {
       .catch((error) => console.error(error))
   }
 
+  private connectSwagger() {
+    this.app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs, { explorer: true }))
+  }
+
   private init() {
     this.setRoute()
+    this.connectDB()
+    this.connectSwagger()
   }
 
   listen() {
     this.init()
-    this.connectDB()
     this.app.listen(this.port, () => {
       console.log(`listening on the port ${this.port}`)
     })
