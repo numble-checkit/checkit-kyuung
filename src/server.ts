@@ -1,18 +1,26 @@
 import express from 'express'
+import mongoose from 'mongoose'
+import * as dotenv from 'dotenv'
 import { appController } from './app/app.module'
 import { authController } from './auth/auth.module'
 import { userController } from './user/user.module'
 import { doctorController } from './doctor/doctor.module'
 import { stdController } from './std/std.module'
 
+dotenv.config()
+
 class Server {
   public app: express.Application
-  public port: number
+  public port: any
+  public mongoUrl: any
 
-  constructor(port: number) {
-    const app: express.Application = express()
+  constructor() {
+    const { PORT, MONGODB_URI } = process.env
+    const app = express()
+
+    this.port = PORT
     this.app = app
-    this.port = port
+    this.mongoUrl = MONGODB_URI
   }
 
   private setRoute() {
@@ -23,14 +31,29 @@ class Server {
     this.app.use(stdController.getRouter())
   }
 
-  listen() {
+  private connectDB() {
+    mongoose
+      .connect(this.mongoUrl, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      } as mongoose.ConnectOptions)
+      .then(() => console.log('MongoDB Connected'))
+      .catch((error) => console.error(error))
+  }
+
+  private init() {
     this.setRoute()
+  }
+
+  listen() {
+    this.init()
+    this.connectDB()
     this.app.listen(this.port, () => {
       console.log(`listening on the port ${this.port}`)
     })
   }
 }
 
-const server = new Server(8000)
+const server = new Server()
 
 server.listen()
