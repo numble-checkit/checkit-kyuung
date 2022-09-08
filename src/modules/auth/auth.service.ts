@@ -1,3 +1,5 @@
+import { httpSuccess } from './../../common/httpMessage/httpSuccess'
+import { httpException } from './../../common/httpMessage/httpException'
 import * as bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
 import { jwtToken } from '../../common/util/jwt'
@@ -10,26 +12,17 @@ export class AuthService {
     try {
       const { email, key } = req.body
       const user = await User.findOne({ email })
-      if (!user) return res.send({ message: '이메일을 확인해주세요.' })
+      console.log(user)
+      if (!user) return httpException.error(res, '이메일이 존재하지 않습니다.')
 
       const isPasswordValidated = await bcrypt.compare(key, user.key)
-      if (!isPasswordValidated) return res.send({ message: '비밀번호를 확인해주세요.' })
+      if (!isPasswordValidated) return httpException.error(res, '비밀번호를 확인해주세요')
 
       const token = jwtToken.createToken(email)
 
-      return res.send({
-        success: {
-          statusCode: 200,
-          json: {
-            status: 'ok',
-            data: {
-              token,
-            },
-          },
-        },
-      })
-    } catch (error: any) {
-      res.status(400).send(error)
+      return httpSuccess.success({ res, message: '로그인 되었습니다.', data: { token } })
+    } catch (err: any) {
+      console.log(err)
     }
   }
 }

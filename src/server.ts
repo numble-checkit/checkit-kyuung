@@ -8,6 +8,7 @@ import { userController } from './modules/user/user.module'
 import { doctorController } from './modules/doctor/doctor.module'
 import { stdController } from './modules/std/std.module'
 import { specs } from './config/swagger'
+import { authMiddleware } from './common/middleware'
 
 dotenv.config()
 
@@ -23,6 +24,10 @@ class Server {
     this.port = PORT
     this.app = app
     this.mongoUrl = MONGODB_URI
+  }
+
+  private setPreMiddleware() {
+    this.app.use(authMiddleware.getRouter())
   }
 
   private setRoute() {
@@ -49,6 +54,7 @@ class Server {
   }
 
   private init() {
+    this.setPreMiddleware()
     this.setRoute()
     this.connectDB()
     this.connectSwagger()

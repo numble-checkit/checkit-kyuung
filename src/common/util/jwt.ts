@@ -3,12 +3,6 @@ import * as dotenv from 'dotenv'
 
 dotenv.config()
 
-interface IJwt {
-  payload: string
-  iat: number
-  exp: number
-}
-
 class Jwt {
   private jwtKey: any
   private jwtHash: any
@@ -28,9 +22,12 @@ class Jwt {
   }
 
   public verifyToken(token: string) {
-    const decoded: any = jwt.verify(token, this.jwtKey)
-
-    return decoded
+    try {
+      const decoded: any = jwt.verify(token, this.jwtKey)
+      return decoded
+    } catch (err) {
+      return false
+    }
   }
 }
 
