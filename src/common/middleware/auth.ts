@@ -7,6 +7,7 @@ export class AuthMiddleware {
   constructor() {}
 
   async verify(req: Request, res: Response, next: NextFunction) {
+    console.log('verify')
     const token = req.headers.authorization?.split(' ')[1]
     if (!token) return httpException.unauthorized(res)
     const decoded = jwtToken.verifyToken(token)
@@ -17,6 +18,7 @@ export class AuthMiddleware {
 
   initRouter() {
     this.router.post('/v3/user/unreg', this.verify)
+    this.router.get('/v3/doctor', this.verify)
   }
 
   getRouter() {
