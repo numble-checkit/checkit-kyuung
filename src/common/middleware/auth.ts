@@ -18,6 +18,7 @@ export class AuthMiddleware {
   initRouter() {
     this.router.post('/v3/user/unreg', this.verify)
     this.router.get('/v3/doctor/*', this.verify)
+    this.router.post('/v3/std/reg', this.verify)
   }
 
   getRouter() {

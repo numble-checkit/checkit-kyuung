@@ -7,7 +7,7 @@ export class StdController {
   constructor(private readonly stdService: StdService) {}
 
   initRouter() {
-    this.router.get('/v3/std/reg', this.stdService.postRegister)
+    this.router.post('/v3/std/reg', this.stdService.postRegister)
   }
 
   getRouter() {
