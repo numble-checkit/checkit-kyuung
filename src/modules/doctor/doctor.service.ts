@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { httpException } from '../../common/httpMessage/httpException'
 import { httpSuccess } from '../../common/httpMessage/httpSuccess'
 import { Doctor } from './doctor.schema'
 
@@ -37,6 +38,12 @@ export class DoctorService {
 
   public async createDoctor(req: Request, res: Response) {
     const data = req.body
+    const isId = await Doctor.findOne({ doctor_id: data.doctor_id })
+    const isName = await Doctor.findOne({ doctor_display_name: data.doctor_display_name })
+    const isTel = await Doctor.findOne({ doctor_tel: data.doctor_tel })
+    if (isId) return httpException.error(res, '동일한 ID가 존재합니다.')
+    if (isName) return httpException.error(res, '동일한 이름이 존재합니다.')
+    if (isTel) return httpException.error(res, '동일한 핸드폰번호가 존재합니다.')
 
     try {
       await Doctor.create(data)

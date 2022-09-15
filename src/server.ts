@@ -1,13 +1,11 @@
 import express from 'express'
 import mongoose from 'mongoose'
 import * as dotenv from 'dotenv'
-import swaggerUi from 'swagger-ui-express'
-import { appController } from './modules/app/app.module'
+import { testController } from './modules/test/test.module'
 import { authController } from './modules/auth/auth.module'
 import { userController } from './modules/user/user.module'
 import { doctorController } from './modules/doctor/doctor.module'
 import { stdController } from './modules/std/std.module'
-import { specs } from './config/swagger'
 import { authMiddleware } from './common/middleware'
 
 dotenv.config()
@@ -32,7 +30,7 @@ class Server {
 
   private setRoute() {
     this.app.use(express.json())
-    this.app.use(appController.getRouter())
+    this.app.use(testController.getRouter())
     this.app.use(authController.getRouter())
     this.app.use(userController.getRouter())
     this.app.use(doctorController.getRouter())
@@ -49,15 +47,10 @@ class Server {
       .catch((error) => console.error(error))
   }
 
-  private connectSwagger() {
-    this.app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs, { explorer: true }))
-  }
-
   private init() {
     this.setPreMiddleware()
     this.setRoute()
     this.connectDB()
-    this.connectSwagger()
   }
 
   listen() {
